@@ -1,0 +1,3 @@
+[submodule "cicd-submodule"]
+	path = cicd-submodule
+	url = https://github.com/dlrbcnvk/cicd-submodule.git
