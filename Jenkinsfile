@@ -24,6 +24,11 @@ pipeline {
                 }
             }
         }
+        stage('Add submodule') {
+            steps {
+                sh 'git submodule add https://github.com/dlrbcnvk/cicd-submodule.git'
+            }
+        }
 
 
         stage('Build') {
