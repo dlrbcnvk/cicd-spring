@@ -2,12 +2,10 @@ pipeline {
     agent any
 
     environment {
-        AWS_DEFAULT_REGION = 'ap-northeast-2'
-        AWS_ACCESS_KEY_ID = credentials('your-aws-access-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('your-aws-secret-access-key')
-        ECR_REGISTRY = 'your-ecr-registry'
-        DOCKER_IMAGE_TAG = 'your-docker-image-tag'
-        DOCKER_IMAGE_NAME = 'your-docker-image-name'
+        REGION = 'ap-northeast-2';
+        ECR_PATH = '943822899858.dkr.ecr.ap-northeast-2.amazonaws.com'
+        ECR_IMAGE = '/cicd_spring_repository'
+        AWS_CREDENTIAL_ID = 'jenkins-aws-credentials'
     }
 
     stages {
@@ -45,42 +43,53 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
-            steps {
-                script {
-                    // Docker 이미지 빌드
-                    def dockerImageName = "cicd-test:latest"
-                    def dockerfilePath = "./Dockerfile"
-                    sh "sudo docker build -t ${dockerImageName} -f ${dockerfilePath} ."
-                }
-            }
-            post {
-                success {
-                    echo 'Docker build success'
-                }
-                failure {
-                    echo 'Docker build failed'
-                }
+//        stage('Docker Build') {
+//            steps {
+//                script {
+//                    // Docker 이미지 빌드
+//                    def dockerImageName = "cicd-test:latest"
+//                    def dockerfilePath = "./Dockerfile"
+//                    sh "sudo docker build -t ${dockerImageName} -f ${dockerfilePath} ."
+//                }
+//            }
+//            post {
+//                success {
+//                    echo 'Docker build success'
+//                }
+//                failure {
+//                    echo 'Docker build failed'
+//                }
+//            }
+//        }
+
+        stage('Docker build') {
+            docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}") {
+                image = docker.build("${ECR_PATH}/${ECR_IMAGE}")
             }
         }
 
-        stage('Build image') {
-            steps {
-                app = docker.build("943822899858.dkr.ecr.ap-northeast-2.amazonaws.com/cicd_spring_repository")
+        stage('Push to ECR') {
+            docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}") {
+                image.push("v${env.BUILD_NUMBER}")
             }
         }
 
-        stage('Push image') {
-            steps {
-                sh 'rm  ~/.dockercfg || true'
-                sh 'rm ~/.docker/config.json || true'
-
-                docker.withRegistry('https://943822899858.dkr.ecr.ap-northeast-2.amazonaws.com', 'ecr:ap-northeast-2:jenkins-aws-credentials') {
-                    app.push("${env.BUILD_NUMBER}")
-                    app.push("latest")
-                }
-            }
-
+        stage('CleanUp images') {
+            sh"""
+            sudo docker rmi ${ECR_PATH}/${ECR_IMAGE}:v$BUILD_NUMBER
+            sudo docker rmi ${ECR_PATH}/${ECR_IMAGE}:latest
+            """
         }
+
+//        stage('Deploy to k8s'){
+//            withKubeConfig([credentialsId: "{EKS_JENKINS_CREDENTIAL_ID}",
+//                            serverUrl: "${EKS_API}",
+//                            clusterName: "${EKS_CLUSTER_NAME}"]){
+//                sh "sed 's/IMAGE_VERSION/v${env.BUILD_ID}/g' service.yaml > output.yaml"
+//                sh "aws eks --region ${REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}"
+//                sh "kubectl apply -f output.yaml"
+//                sh "rm output.yaml"
+//            }
+//        }
     }
 }
