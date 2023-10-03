@@ -34,8 +34,6 @@ pipeline {
                 )
                 withCredentials([GitUsernamePassword(credentialsId: 'cicd-test', gitToolName: 'Default')]){
                     sh '''
-                        gradle --stop
-                        gradle --start
                         git submodule add -f https://github.com/dlrbcnvk/cicd-submodule.git
                     '''
                 }
