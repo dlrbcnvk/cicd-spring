@@ -34,9 +34,7 @@ pipeline {
                 )
                 withCredentials([GitUsernamePassword(credentialsId: 'cicd-test', gitToolName: 'Default')]){
                     sh '''
-                        cd src/main/resources
-                        git submodule init
-                        git submodule update
+                        git submodule add -f https://github.com/dlrbcnvk/cicd-submodule.git
                     '''
                 }
                 sh 'pwd; ls -al;'
