@@ -9,44 +9,27 @@ pipeline {
     }
 
     stages {
-//        stage('Checkout') {
-//            steps {
-//                git branch: 'main',
-//                    credentialsId: 'cicd-test',
-//                    url: 'https://github.com/dlrbcnvk/cicd-spring.git'
-//            }
-//            post {
-//                success {
-//                    sh 'echo Successfully Cloned Repository'
-//                }
-//                failure {
-//                    sh 'echo Fail Cloned Repository'
-//                }
-//            }
-//        }
-
-        stage('github clone') {
+        stage('Checkout') {
             steps {
-                checkout scmGit(
-                        branches: [[name: '*/main']],
-                        extensions: [submodule(parentCredentials: true,reference: '', trackingSubmodules: true)],
-                        userRemoteConfigs: [[credentialsId: 'cicd-test', url: 'https://github.com/dlrbcnvk/cicd-spring']]
-                )
+                git branch: 'main',
+                    credentialsId: 'cicd-test',
+                    url: 'https://github.com/dlrbcnvk/cicd-spring.git'
+
                 withCredentials([GitUsernamePassword(credentialsId: 'cicd-test', gitToolName: 'Default')]){
                     sh '''
                         git submodule add -f https://github.com/dlrbcnvk/cicd-submodule.git
                     '''
                 }
-                sh 'pwd; ls -al;'
+            }
+            post {
+                success {
+                    sh 'echo Successfully Cloned Repository'
+                }
+                failure {
+                    sh 'echo Fail Cloned Repository'
+                }
             }
         }
-
-//        stage('Add submodule') {
-//            steps {
-//                sh 'git config --global --add safe.directory /var/lib/jenkins/workspace/cicd-pipeline'
-//
-//            }
-//        }
 
 
         stage('Build') {
