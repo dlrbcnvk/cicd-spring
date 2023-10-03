@@ -92,10 +92,12 @@ pipeline {
         }
 
         stage('CleanUp images') {
-            sh"""
-            sudo docker rmi ${ECR_PATH}/${ECR_IMAGE}:v$BUILD_NUMBER
-            sudo docker rmi ${ECR_PATH}/${ECR_IMAGE}:latest
-            """
+            steps {
+                sh"""
+                sudo docker rmi ${ECR_PATH}/${ECR_IMAGE}:v$BUILD_NUMBER
+                sudo docker rmi ${ECR_PATH}/${ECR_IMAGE}:latest
+                """
+            }
         }
 
 //        stage('Deploy to k8s'){
