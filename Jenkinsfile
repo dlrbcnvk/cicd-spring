@@ -65,8 +65,8 @@ pipeline {
         stage('Docker build') {
             steps {
                 sh """
-                    sudo docker build -t ${ECR_IMAGE}:$BUILD_NUMBER -f Dockerfile .
-                    sudo docker tag ${ECR_IMAGE}:$BUILD_NUMBER ${ECR_IMAGE}:latest
+                    sudo docker build -t ${ECR_PATH}/${ECR_IMAGE}:${BUILD_NUMBER} -f Dockerfile .
+                    sudo docker tag ${ECR_PATH}/${ECR_IMAGE}:${BUILD_NUMBER} ${ECR_PATH}/${ECR_IMAGE}:latest
                 """
             }
 
@@ -90,8 +90,8 @@ pipeline {
 //                }
 
                 sh """
-                    sudo docker push ${ECR_PATH}:${ECR_IMAGE}:${BUILD_NUMBER}
-                    sudo docker push ${ECR_PATH}:${ECR_IMAGE}:latest
+                    sudo docker push ${ECR_PATH}/${ECR_IMAGE}:${BUILD_NUMBER}
+                    sudo docker push ${ECR_PATH}/${ECR_IMAGE}:latest
                 """
             }
         }
