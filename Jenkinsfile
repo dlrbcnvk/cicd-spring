@@ -24,12 +24,23 @@ pipeline {
                 }
             }
         }
-        stage('Add submodule') {
+
+        stage('github clone') {
             steps {
-                sh 'cd src/main/resources; git submodule init; git submodule update'
-                sh 'cd ../../..'
+                checkout scmGit(
+                        branches: [[name: '*/main']],
+                        extensions: [submodule(parentCredentials: true,reference: '', trackingSubmodules: true)],
+                        userRemoteConfigs: [[credentialsId: 'cicd-test', url: 'https://github.com/dlrbcnvk/cicd-submodule']]
+                )
             }
         }
+
+//        stage('Add submodule') {
+//            steps {
+//                sh 'git config --global --add safe.directory /var/lib/jenkins/workspace/cicd-pipeline'
+//                sh
+//            }
+//        }
 
 
         stage('Build') {
