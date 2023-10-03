@@ -34,6 +34,7 @@ pipeline {
                 )
                 withCredentials([GitUsernamePassword(credentialsId: 'cicd-test', gitToolName: 'Default')]){
                     sh '''
+                        cd src/main/resources
                         git submodule init
                         git submodule update
                     '''
