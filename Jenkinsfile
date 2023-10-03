@@ -32,6 +32,12 @@ pipeline {
                         extensions: [submodule(parentCredentials: true,reference: '', trackingSubmodules: true)],
                         userRemoteConfigs: [[credentialsId: 'cicd-test', url: 'https://github.com/dlrbcnvk/cicd-spring']]
                 )
+                withCredentials([GitUsernamePassword(credentialsId: 'cicd-test', gitToolName: 'Default')]){
+                    sh '''
+                        git submodule init
+                        git submodule update
+                    '''
+                }
                 sh 'pwd; ls -al;'
             }
         }
