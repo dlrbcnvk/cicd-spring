@@ -43,25 +43,6 @@ pipeline {
             }
         }
 
-//        stage('Docker Build') {
-//            steps {
-//                script {
-//                    // Docker 이미지 빌드
-//                    def dockerImageName = "cicd-test:latest"
-//                    def dockerfilePath = "./Dockerfile"
-//                    sh "sudo docker build -t ${dockerImageName} -f ${dockerfilePath} ."
-//                }
-//            }
-//            post {
-//                success {
-//                    echo 'Docker build success'
-//                }
-//                failure {
-//                    echo 'Docker build failed'
-//                }
-//            }
-//        }
-
         stage('Docker build') {
             steps {
                 sh """
@@ -82,13 +63,6 @@ pipeline {
 
         stage('Push to ECR') {
             steps {
-//                script {
-//                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}") {
-//                        docker.image("${ECR_IMAGE}:${BUILD_NUMBER}").push()
-//                        docker.image("${ECR_IMAGE}:latest").push()
-//                    }
-//                }
-
                 sh """
                     sudo docker push ${ECR_PATH}/${ECR_IMAGE}:${BUILD_NUMBER}
                     sudo docker push ${ECR_PATH}/${ECR_IMAGE}:latest
@@ -104,16 +78,5 @@ pipeline {
                 """
             }
         }
-
-//        stage('Deploy to k8s'){
-//            withKubeConfig([credentialsId: "{EKS_JENKINS_CREDENTIAL_ID}",
-//                            serverUrl: "${EKS_API}",
-//                            clusterName: "${EKS_CLUSTER_NAME}"]){
-//                sh "sed 's/IMAGE_VERSION/v${env.BUILD_ID}/g' service.yaml > output.yaml"
-//                sh "aws eks --region ${REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}"
-//                sh "kubectl apply -f output.yaml"
-//                sh "rm output.yaml"
-//            }
-//        }
     }
 }
