@@ -99,7 +99,7 @@ pipeline {
         stage('CleanUp images') {
             steps {
                 sh"""
-                sudo docker rmi ${ECR_PATH}/${ECR_IMAGE}:v$BUILD_NUMBER
+                sudo docker rmi ${ECR_PATH}/${ECR_IMAGE}:${BUILD_NUMBER}
                 sudo docker rmi ${ECR_PATH}/${ECR_IMAGE}:latest
                 """
             }
