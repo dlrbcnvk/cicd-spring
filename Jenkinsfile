@@ -26,7 +26,8 @@ pipeline {
         }
         stage('Add submodule') {
             steps {
-                sh 'git submodule init; git submodule update'
+                sh 'cd src/main/resources; git submodule init; git submodule update'
+                sh 'cd ../../..'
             }
         }
 
