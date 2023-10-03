@@ -2,19 +2,21 @@ pipeline {
     agent any
     stages {
         stage('Checkout') {
-            git branch: 'master',
-                credentialsId: 'cicd-test'
-                url: "https://github.com/dlrbcnvk/cicd-spring.git"
+            steps {
+                git branch: 'main',
+                    credentialsId: 'cicd-test'
+                    url: "https://github.com/dlrbcnvk/cicd-spring.git"
+            }
+            post {
+                success {
+                    sh 'echo Successfully Cloned Repository'
+                }
+                failure {
+                    sh 'echo Fail Cloned Repository'
+                }
+            }
         }
 
-        post {
-            success {
-                sh 'echo Successfully Cloned Repository'
-            }
-            failure {
-                sh 'echo Fail Cloned Repository'
-            }
-        }
 
         stage('Build') {
             steps {
