@@ -27,6 +27,12 @@ pipeline {
 
         stage('github clone') {
             steps {
+                dir('/var/jenkins_home/workspace/cicd-pipeline'){
+                    sh '''
+                        echo delete existing project file
+                    '''
+                    deleteDir()
+                }
                 checkout scmGit(
                         branches: [[name: '*/main']],
                         extensions: [submodule(parentCredentials: true,reference: '', trackingSubmodules: true)],
