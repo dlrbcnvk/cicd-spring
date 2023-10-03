@@ -32,7 +32,7 @@ pipeline {
                         extensions: [submodule(parentCredentials: true,reference: '', trackingSubmodules: true)],
                         userRemoteConfigs: [[credentialsId: 'cicd-test', url: 'https://github.com/dlrbcnvk/cicd-submodule']]
                 )
-                sh 'cd ../../..'
+                sh 'cd pwd; ls -al;'
             }
         }
 
