@@ -17,7 +17,7 @@ pipeline {
 
                 withCredentials([GitUsernamePassword(credentialsId: 'cicd-test', gitToolName: 'Default')]){
                     sh '''
-                        git submodule add -f https://github.com/dlrbcnvk/cicd-submodule.git
+                        sudo git submodule add -f https://github.com/dlrbcnvk/cicd-submodule.git
                     '''
                 }
             }
@@ -35,7 +35,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'chmod +x gradlew'
-                sh './gradlew clean build'
+                sh 'sudo ./gradlew clean build'
 
                 sh 'ls -al ./build/libs'
             }
