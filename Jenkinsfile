@@ -4,7 +4,7 @@ pipeline {
     environment {
         REGION = 'ap-northeast-2';
         ECR_PATH = '943822899858.dkr.ecr.ap-northeast-2.amazonaws.com'
-        ECR_IMAGE = '/cicd_spring_repository'
+        ECR_IMAGE = 'cicd_spring_repository'
         AWS_CREDENTIAL_ID = 'jenkins-aws-credentials'
     }
 
@@ -63,14 +63,31 @@ pipeline {
 //        }
 
         stage('Docker build') {
-            docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}") {
-                image = docker.build("${ECR_PATH}/${ECR_IMAGE}")
+            steps {
+                sh """
+                    sudo docker build -t ${ECR_IMAGE}:$BUILD_NUMBER -f Dockerfile .
+                    sudo docker tag ${ECR_IMAGE}:$BUILD_NUMBER ${ECR_IMAGE}:latest
+                """
+            }
+
+            post {
+                success {
+                    echo 'success dockerizing project'
+                }
+                failure {
+                    error 'fail dockerizing project' // exit pipeline
+                }
             }
         }
 
         stage('Push to ECR') {
-            docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}") {
-                image.push("v${env.BUILD_NUMBER}")
+            steps {
+                script {
+                    docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}") {
+                        docker.image("${ECR_IMAGE}:${BUILD_NUMBER}").push()
+                        docker.image("${ECR_IMAGE}:latest").push()
+                    }
+                }
             }
         }
 
