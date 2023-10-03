@@ -65,17 +65,22 @@ pipeline {
         }
 
         stage('Build image') {
-            app = docker.build("943822899858.dkr.ecr.ap-northeast-2.amazonaws.com/cicd_spring_repository")
+            steps {
+                app = docker.build("943822899858.dkr.ecr.ap-northeast-2.amazonaws.com/cicd_spring_repository")
+            }
         }
 
         stage('Push image') {
-            sh 'rm  ~/.dockercfg || true'
-            sh 'rm ~/.docker/config.json || true'
+            steps {
+                sh 'rm  ~/.dockercfg || true'
+                sh 'rm ~/.docker/config.json || true'
 
-            docker.withRegistry('https://943822899858.dkr.ecr.ap-northeast-2.amazonaws.com', 'ecr:ap-northeast-2:jenkins-aws-credentials') {
-                app.push("${env.BUILD_NUMBER}")
-                app.push("latest")
+                docker.withRegistry('https://943822899858.dkr.ecr.ap-northeast-2.amazonaws.com', 'ecr:ap-northeast-2:jenkins-aws-credentials') {
+                    app.push("${env.BUILD_NUMBER}")
+                    app.push("latest")
+                }
             }
+
         }
     }
 }
