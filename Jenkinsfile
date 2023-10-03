@@ -34,5 +34,24 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker Build') {
+            steps {
+                script {
+                    // Docker 이미지 빌드
+                    def dockerImageName = "cicd-test:latest"
+                    def dockerfilePath = "./Dockerfile"
+                    sh "docker build -t ${dockerImageName} -f ${dockerfilePath} ."
+                }
+            }
+            post {
+                success {
+                    echo 'Docker build success'
+                }
+                failure {
+                    echo 'Docker build failed'
+                }
+            }
+        }
     }
 }
