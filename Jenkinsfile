@@ -4,8 +4,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    credentialsId: 'cicd-test'
-                    url: "https://github.com/dlrbcnvk/cicd-spring.git"
+                    credentialsId: 'cicd-test',
+                    url: 'https://github.com/dlrbcnvk/cicd-spring.git'
             }
             post {
                 success {
