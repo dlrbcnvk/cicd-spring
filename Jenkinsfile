@@ -41,7 +41,7 @@ pipeline {
                     // Docker 이미지 빌드
                     def dockerImageName = "cicd-test:latest"
                     def dockerfilePath = "./Dockerfile"
-                    sh "docker build -t ${dockerImageName} -f ${dockerfilePath} ."
+                    sh "sudo docker build -t ${dockerImageName} -f ${dockerfilePath} ."
                 }
             }
             post {
